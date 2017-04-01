@@ -1,0 +1,5 @@
+{
+    "SMUGMUG_KEY": "--key--",
+    "SMUGMUG_SECRET": "--secret--",
+    "SMUGMUG_CALLBACK_URL": "http://127.0.0.1:3000/smugmug/auth/callback"
+}
