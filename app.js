@@ -2,6 +2,7 @@ var express = require('express');
 var passport = require('passport');
 var SmugMugStrategy = require('passport-smugmug').Strategy;
 var path = require('path');
+var fs = require('fs');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
@@ -14,6 +15,7 @@ var api = require('./routes/api');
 var smugmug = require('./routes/smugmug')(passport);
 var config = require('./config.json');
 var app = express();
+var curUser = null;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -38,7 +40,7 @@ app.get('/', function(req, res){
 });
 app.use('/users', users);
 app.use('/api', api);
-app.use('/smugmug', smugmug);
+app.use('/smugmug', smugmug.router);
 
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
@@ -48,6 +50,12 @@ app.use('/smugmug', smugmug);
 //   have a database of user records, the complete SmugMug profile is
 //   serialized and deserialized.
 passport.serializeUser(function(user, done) {
+  curUser = user;
+  var util = require('util');
+
+  // alternative shortcut
+  // console.log(util.inspect(curUser, false, null));
+
   done(null, user);
 });
 
@@ -67,15 +75,33 @@ passport.use(new SmugMugStrategy({
   function(token, tokenSecret, profile, done) {
     // asynchronous verification, for effect...
     process.nextTick(function () {
-
+      console.log(token, tokenSecret, profile);
       // To keep the example simple, the user's SmugMug profile is returned to
       // represent the logged-in user.  In a typical application, you would want
       // to associate the SmugMug account with a user record in your database,
       // and return that user instead.
+      upload();
       return done(null, profile);
     });
   }
 ));
+
+function upload() {
+  fs.readFile(path.resolve('picture.jpg'), function(err1, data) {
+    if (err1) {
+      console.log('nope:', err1);
+      return;
+    } else {
+      console.log('uploading ...')
+    }
+    smugmug.upload(data, config.SMUGMUG_ALBUM_URI)
+      .then(function (res) {
+        console.log('success', res);
+      }, function (err) {
+        conosle.log('err', err);
+      });
+  });
+}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

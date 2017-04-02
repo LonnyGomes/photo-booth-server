@@ -15,7 +15,9 @@
     "express-session": "^1.15.2",
     "gphoto2": "^0.1.7",
     "morgan": "~1.7.0",
+    "oauth": "^0.9.15",
     "passport-smugmug": "^0.1.2",
+    "q": "^1.5.0",
     "serve-favicon": "~2.3.0"
   }
 }
