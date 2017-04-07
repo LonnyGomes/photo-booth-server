@@ -19,22 +19,6 @@ module.exports = function (passport) {
         res.redirect('/login')
     }
 
-    function genOauthAuthHeader(token, oauth) {
-        var authStr =[
-            'OAuth oauth_consumer_key="',
-            oauth._consumerKey,
-            '", oauth_signature_method="',
-            oauth._signatureMethod,
-            '", oauth_token="',
-            token.id,
-            '", oauth_token_secret="',
-            token.Secret,
-            '", oauth_version="1.0"'].join('');
-        console.log('authStr', authStr);
-        //[OAuth oauth_consumer_key="Ruar6x4fqR6EI9nTslrlvbrihYWSwHoJ", oauth_nonce="5689814974954522603", oauth_signature="HlHt3m8fO2sg9NbWYp6M9JTDSuk%3D", oauth_signature_method="HMAC-SHA1", oauth_timestamp="1470297133", oauth_token="MY_AUTH_TOKEN", oauth_token_secret="MY_TOKEN_SECRET", oauth_version="1.0"]
-        return authStr;
-    }
-
     function upload(imageData, albumUri) {
         var defer = q.defer(),
             OAuth = require('oauth'),
@@ -73,37 +57,6 @@ module.exports = function (passport) {
                     defer.resolve({data: data, response: response});
                 }
             });
-
-        // req = http.request({
-        //     host: 'upload.smugmug.com',
-        //     path: '/',
-        //     //This is what changes the request to a POST request
-        //     method: 'POST',
-        //     headers: {
-        //         'X-Smug-ResponseType': 'JSON',
-        //         'X-Smug-Version': 'v2',
-        //         'X-Smug-AlbumUri': albumUri,
-        //         'Content-Type': 'image/jpeg',
-        //         'Authorization': genOauthAuthHeader(storedToken, storedOauth)
-        //     }
-        // }, function (response) {
-        //     var result = '';
-
-        //     response.on('data', function (chunk) {
-        //         result += chunk;
-        //     });
-
-        //     response.on('end', function () {
-        //         defer.resolve(result);
-        //     });
-
-        //     response.on('error', function (err) {
-        //         defer.reject(err);
-        //     });
-        // });
-
-        // req.write(imageData);
-        // req.end();
 
         return defer.promise;
     }
